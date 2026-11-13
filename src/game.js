@@ -8,7 +8,7 @@ export const CFG = {
   SHRINK_SPEED: 13,    // px/s
 
   PLAYER_R: 22,
-  ACCEL: 1500,
+  ACCEL: 1250,
   DAMP: 2.4,
   OBJ_DAMP: 1.5,
   MAX_SPEED: 950,
@@ -146,7 +146,7 @@ export function startRound(s) {
   const off = s.rand() * Math.PI * 2;
   s.players.forEach((p, i) => {
     const a = off + (i / Math.max(1, n)) * Math.PI * 2;
-    const rr = CFG.ARENA_R * (n <= 2 ? 0.5 : 0.6);
+    const rr = CFG.ARENA_R * (n <= 2 ? 0.42 : 0.5);
     p.x = Math.cos(a) * rr; p.y = Math.sin(a) * rr;
     p.vx = p.vy = 0;
     p.pol = i % 2 === 0 ? POLE_PLUS : POLE_MINUS;

@@ -14,6 +14,8 @@ export class Renderer {
     this.floaters = [];
     this.shake = 0;
     this.time = 0;
+    this.touchMode = false;
+    this.cam = null;
     this.prev = new Map();
     this.stars = Array.from({ length: 160 }, () => ({
       x: Math.random(), y: Math.random(), r: Math.random() * 1.4 + 0.2, a: Math.random() * 0.6 + 0.2, tw: Math.random() * 6,
@@ -98,14 +100,48 @@ export class Renderer {
   }
 
   // ------------------------------------------------ Kamera
-  camera() {
-    const margin = 40;
-    const s = Math.min(this.w, this.h - 70) / (2 * CFG.ARENA_R + margin * 2);
+  // Auf kleinen Bildschirmen zoomt die Kamera ins Geschehen (alle lebenden Spieler
+  // bleiben sichtbar) und lässt unten Platz für die Touch-Knöpfe.
+  layout() {
+    const portrait = this.h > this.w;
+    const top = this.w < 700 || this.h < 500 ? (portrait ? 92 : 56) : 72;
+    const bottom = this.touchMode && portrait ? Math.min(210, this.h * 0.24) : 0;
+    const side = this.touchMode && !portrait ? Math.min(150, this.w * 0.14) : 0;
+    return { top, bottom, side, vw: this.w - side * 2, vh: Math.max(120, this.h - top - bottom) };
+  }
+
+  camera(view, dt) {
+    const L = this.layout();
+    const fit = Math.min(L.vw, L.vh) / (2 * CFG.ARENA_R + 50);
+    let tx = 0, ty = 0, ts = fit;
+    const small = Math.min(this.w, this.h) < 700;
+    if (view && small && view.phase !== 'lobby') {
+      const pts = view.players.filter(p => p.alive);
+      if (pts.length) {
+        const pad = 230;
+        let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+        for (const p of pts) {
+          x0 = Math.min(x0, p.x - pad); x1 = Math.max(x1, p.x + pad);
+          y0 = Math.min(y0, p.y - pad); y1 = Math.max(y1, p.y + pad);
+        }
+        const R = view.ringR + 30;
+        x0 = Math.max(x0, -R); x1 = Math.min(x1, R); y0 = Math.max(y0, -R); y1 = Math.min(y1, R);
+        ts = Math.min(L.vw / Math.max(1, x1 - x0), L.vh / Math.max(1, y1 - y0));
+        ts = Math.max(fit, Math.min(fit * 1.75, ts));
+        tx = (x0 + x1) / 2; ty = (y0 + y1) / 2;
+        // Nicht weiter als nötig aus der Arena schauen
+        const mx = Math.max(0, R - L.vw / 2 / ts), my = Math.max(0, R - L.vh / 2 / ts);
+        tx = Math.max(-mx, Math.min(mx, tx)); ty = Math.max(-my, Math.min(my, ty));
+      }
+    }
+    const c = this.cam || (this.cam = { x: tx, y: ty, s: ts });
+    const k = Math.min(1, dt * 2.5);
+    c.x += (tx - c.x) * k; c.y += (ty - c.y) * k; c.s += (ts - c.s) * k;
     let sx = 0, sy = 0;
     if (this.shake > 0.1) {
       sx = (Math.random() - 0.5) * this.shake; sy = (Math.random() - 0.5) * this.shake;
     }
-    return { s, ox: this.w / 2 + sx, oy: (this.h + 50) / 2 + sy };
+    return { s: c.s, ox: L.side + L.vw / 2 - c.x * c.s + sx, oy: L.top + L.vh / 2 - c.y * c.s + sy };
   }
 
   // ------------------------------------------------ Zeichnen
@@ -116,7 +152,7 @@ export class Renderer {
     this.drawBackground();
     if (!view) return;
 
-    const cam = this.camera();
+    const cam = this.camera(view, dt);
     g.save();
     g.translate(cam.ox, cam.oy);
     g.scale(cam.s, cam.s);
@@ -130,7 +166,7 @@ export class Renderer {
     const sorted = [...view.players].sort((a, b) => (a.alive - b.alive) || (a.y - b.y));
     for (const p of sorted) this.drawPlayer(p, localIds.includes(p.id), view);
     this.updateParticles(dt);
-    this.updateFloaters(dt, cam.s);
+    this.updateFloaters(dt, cam);
     g.restore();
 
     this.shake *= Math.pow(0.0005, dt);
@@ -509,8 +545,10 @@ export class Renderer {
     if (this.particles.length > 600) this.particles.splice(0, this.particles.length - 600);
   }
 
-  updateFloaters(dt, camScale) {
-    const g = this.g;
+  updateFloaters(dt, cam) {
+    const g = this.g, camScale = cam.s;
+    // sichtbarer Weltbereich, damit Texte nicht aus dem Bild ragen
+    const vx0 = -cam.ox / cam.s, vx1 = (this.w - cam.ox) / cam.s;
     for (const f of this.floaters) {
       f.t += dt;
       const k = f.t / f.life;
@@ -519,16 +557,18 @@ export class Renderer {
       g.font = `900 ${fs}px system-ui, sans-serif`;
       g.textAlign = 'center'; g.textBaseline = 'middle';
       const y = f.y - easeOut(Math.min(1, k * 2)) * 40;
+      const half = g.measureText(f.text).width / 2 + 8 / camScale;
+      const x = Math.max(vx0 + half, Math.min(vx1 - half, f.x));
       g.lineWidth = fs / 4; g.lineJoin = 'round'; g.strokeStyle = 'rgba(0,0,0,0.75)';
-      g.strokeText(f.text, f.x, y);
+      g.strokeText(f.text, x, y);
       g.fillStyle = f.col;
-      g.fillText(f.text, f.x, y);
+      g.fillText(f.text, x, y);
     }
     g.globalAlpha = 1;
     this.floaters = this.floaters.filter(f => f.t < f.life);
   }
 
-  reset() { this.particles = []; this.rings = []; this.floaters = []; this.shake = 0; this.prev.clear(); }
+  reset() { this.particles = []; this.rings = []; this.floaters = []; this.shake = 0; this.prev.clear(); this.cam = null; }
 }
 
 function rangeOf(p) {

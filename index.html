@@ -8,7 +8,14 @@
   <meta name="theme-color" content="#0b0918">
   <meta property="og:title" content="Magnet Mayhem 🧲">
   <meta property="og:description" content="Zieh an, stoß ab, schleudere alle aus dem Ring! Kostenloses Browser-Partyspiel für 2–8 Spieler.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Magnet Mayhem">
+  <meta name="format-detection" content="telephone=no">
+  <meta property="og:image" content="icons/icon-512.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -50,6 +57,7 @@
       </label>
 
       <div class="menu-buttons">
+        <button id="btn-install" class="btn install hidden">📲 Als App installieren</button>
         <button id="btn-local" class="btn big">🎮 Lokal spielen</button>
         <button id="btn-host" class="btn big primary">🌐 Online-Raum erstellen</button>
         <div class="join-row">
@@ -68,13 +76,18 @@
           <li>Nach 18 s schrumpft der Ring. Wer zuletzt drin ist, gewinnt die Runde.</li>
           <li>Power-ups: 🧲 Supermagnet · 🪨 Schwergewicht · ⚡ Turbo · 🔄 dreht alle anderen Pole um.</li>
         </ul>
-        <table class="keys">
+        <table class="keys touch-keys">
+          <tr><td>Bewegen</td><td>Linke Bildschirmhälfte: Daumen ziehen</td></tr>
+          <tr><td>Pol wechseln</td><td>Runder ±-Knopf</td></tr>
+          <tr><td>Puls</td><td>PULS-Knopf (Ring zeigt Abklingzeit)</td></tr>
+        </table>
+        <table class="keys desk-keys">
           <tr><td>Bewegen</td><td>WASD / Pfeiltasten / Stick</td></tr>
           <tr><td>Pol wechseln</td><td>Leertaste / Linksklick / Ⓐ</td></tr>
           <tr><td>Puls</td><td>Shift / E / Rechtsklick / Ⓑ</td></tr>
         </table>
       </details>
-      <p class="footer">2–8 Spieler · Tastatur, Gamepad &amp; Touch · keine Anmeldung</p>
+      <p class="footer">2–8 Spieler · Handy, Tablet &amp; PC · keine Anmeldung</p>
     </div>
   </section>
 
@@ -159,6 +172,18 @@
         <button id="btn-end-lobby" class="btn">Lobby</button>
         <button id="btn-end-again" class="btn primary big">Nochmal!</button>
       </div>
+    </div>
+  </section>
+
+  <section id="screen-ios" class="screen overlay hidden">
+    <div class="panel ios-panel">
+      <h2>📲 Auf den Home-Bildschirm</h2>
+      <ol>
+        <li>Tippe unten in Safari auf <b>Teilen</b> <span class="ios-share">⬆︎</span></li>
+        <li>Wähle <b>„Zum Home-Bildschirm“</b></li>
+        <li>Tippe auf <b>Hinzufügen</b> – fertig! Magnet Mayhem startet dann im Vollbild wie eine App.</li>
+      </ol>
+      <div class="row"><button class="btn primary big" id="btn-ios-ok">Alles klar!</button></div>
     </div>
   </section>
 

@@ -3,10 +3,19 @@
 **Chaotisches 2D-Multiplayer-Physikspiel im Browser.**
 Du bist ein Magnet. Schalte zwischen **+** und **−** um, zieh Kisten und Bomben an, stoß Gegner ab und schleudere alle aus dem Ring!
 
+- 📱 **Gemacht fürs Handy**: als App installierbar, Vollbild, Touch-Joystick, offline gegen Bots spielbar
 - 🎮 **2–8 Spieler**: online per Raumcode, lokal an einem Gerät oder gegen Bots
 - 🌐 **Keine Anmeldung, kein Server**: Online-Spiele laufen Peer-to-Peer über WebRTC
 - ⌨️🎮📱 **Tastatur, Gamepad und Touch**
 - 🔊 Alle Sounds werden live synthetisiert, es gibt keine Asset-Dateien
+
+## 📲 Als App aufs Handy
+
+Die Seite ist eine **Progressive Web App**:
+- **Android (Chrome):** Im Menü auf **„📲 Als App installieren“** tippen, oder im Browser-Menü auf „App installieren“.
+- **iPhone (Safari):** Auf **Teilen → „Zum Home-Bildschirm“** tippen.
+
+Danach startet Magnet Mayhem mit eigenem Icon im Vollbild, hält den Bildschirm wach und funktioniert gegen Bots auch ohne Internet. Auf kleinen Bildschirmen zoomt die Kamera automatisch ins Geschehen.
 
 ## So wird gespielt
 
@@ -68,6 +77,9 @@ src/render.js     Canvas-Renderer, Partikel, Effekte
 src/net.js        WebRTC-Multiplayer über PeerJS
 src/input.js      Tastatur, Maus, Gamepad, Touch
 src/audio.js      Synthesizer-Sounds (Web Audio)
+src/pwa.js        App-Installation, Wake-Lock, Vollbild
+sw.js             Service Worker (Offline-Cache)
+icons/            App-Icons
 src/main.js       Spielschleife, Modi, UI
 vendor/peerjs.min.js
 test/             node:test-Tests

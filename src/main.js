@@ -8,6 +8,7 @@ import { Renderer } from './render.js';
 import { initInput, Controller, TouchControls, isTouchDevice, connectedPads, SCHEME_LABELS } from './input.js';
 import { sfx, unlockAudio, isMuted, setMuted } from './audio.js';
 import { HostNet, ClientNet, normalizeCode } from './net.js';
+import { initPwa, keepAwake, enterFullscreen } from './pwa.js';
 
 const $ = sel => document.querySelector(sel);
 const $$ = sel => [...document.querySelectorAll(sel)];
@@ -21,6 +22,8 @@ const renderer = new Renderer(canvas);
 initInput(canvas);
 const touch = new TouchControls($('#touch'));
 const useTouch = isTouchDevice();
+document.body.classList.toggle('touch', useTouch);
+renderer.touchMode = useTouch;
 
 // ---------------------------------------------------------------- Zustand
 const app = {
@@ -68,6 +71,7 @@ function show(screen) {
   const inGame = screen === 'game' || screen === 'end';
   $('#hud').classList.toggle('hidden', !inGame);
   touch.show(useTouch && screen === 'game' && app.locals.length > 0);
+  keepAwake(screen === 'game' && app.mode !== 'demo');
 }
 
 let toastTimer = 0;
@@ -133,6 +137,7 @@ function updateLocalCtrlInfo() {
 
 function startLocal() {
   cleanup();
+  if (useTouch) { app.settings.humans = 1; enterFullscreen(); }
   const st = app.settings;
   app.mode = 'local';
   const g = app.game = createGame({ winsNeeded: st.wins });
@@ -159,6 +164,7 @@ function addBot(g, difficulty) {
 // ---------------------------------------------------------------- Host
 async function startHost() {
   cleanup();
+  if (useTouch) enterFullscreen();
   app.mode = 'host';
   const g = app.game = createGame({ winsNeeded: app.settings.wins });
   addPlayer(g, { id: 1, name: getName() });
@@ -256,6 +262,7 @@ async function startClient(code) {
   code = normalizeCode(code);
   if (code.length < 4) { toast('Bitte gib einen gültigen Raumcode ein.', true); return; }
   cleanup();
+  if (useTouch) enterFullscreen();
   app.mode = 'client';
   const client = app.client = new ClientNet();
   $('#btn-join').disabled = true;
@@ -636,6 +643,20 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('gamepadconnected', e => { toast(`🎮 Gamepad ${e.gamepad.index + 1} verbunden`); updateLocalCtrlInfo(); });
 window.addEventListener('beforeunload', () => { if (app.host) app.host.close(); });
+
+// ---------------------------------------------------------------- Handy / App
+initPwa({
+  installButton: $('#btn-install'),
+  iosScreen: $('#screen-ios'),
+  onInstalled: () => toast('🎉 Installiert! Du findest Magnet Mayhem jetzt auf deinem Home-Bildschirm.'),
+});
+$('#btn-ios-ok').onclick = () => $('#screen-ios').classList.add('hidden');
+if (useTouch) {
+  $('#btn-local').textContent = '🤖 Gegen Bots spielen';
+  $('#seg-humans').closest('.setting').classList.add('only-desk');
+  $('#local-ctrl-info').classList.add('only-desk');
+  $('#screen-local h2').textContent = '🤖 Gegen Bots';
+}
 
 // ---------------------------------------------------------------- Start
 startDemo();

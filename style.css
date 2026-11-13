@@ -250,3 +250,25 @@ input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 210, 
 @media (max-width: 420px) {
   .panel { padding: 18px; }
 }
+
+/* ------------------------------------------------ Mobil / App */
+html, body { overscroll-behavior: none; }
+.btn.install {
+  background: rgba(255, 210, 63, .12); border-color: rgba(255, 210, 63, .5); color: var(--accent);
+  animation: glowpulse 2s ease-in-out infinite;
+}
+@keyframes glowpulse { 50% { box-shadow: 0 0 18px rgba(255, 210, 63, .35); } }
+.touch .desk-keys, body:not(.touch) .touch-keys { display: none; }
+.touch .only-desk { display: none !important; }
+.ios-panel ol { line-height: 1.7; padding-left: 22px; }
+.ios-share { display: inline-block; border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; }
+.screen { padding-top: max(16px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+@media (max-height: 500px) and (orientation: landscape) {
+  .panel { padding: 14px 18px; }
+  .logo { font-size: 2rem; }
+  .tagline { margin: 4px 0 10px; }
+  .field { margin-bottom: 8px; }
+  .menu-buttons { grid-template-columns: 1fr 1fr; }
+  .menu-buttons .join-row, .menu-buttons .install { grid-column: 1 / -1; }
+  .howto { margin-top: 10px; }
+}

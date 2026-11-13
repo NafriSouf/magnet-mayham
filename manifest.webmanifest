@@ -1,10 +1,21 @@
 {
   "name": "Magnet Mayhem",
   "short_name": "Magnet Mayhem",
-  "start_url": ".",
+  "description": "Chaotisches Multiplayer-Magnetspiel: Zieh an, stoß ab, schleudere alle aus dem Ring!",
+  "id": "/",
+  "start_url": "/?source=app",
+  "scope": "/",
   "display": "fullscreen",
-  "orientation": "landscape",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
   "background_color": "#0b0918",
   "theme_color": "#0b0918",
-  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+  "categories": ["games", "entertainment"],
+  "lang": "de",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
 }
