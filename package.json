@@ -1,0 +1,12 @@
+{
+  "name": "magnet-mayhem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chaotisches 2D-Multiplayer-Physikspiel im Browser mit Magneten.",
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve -l 5173 .",
+    "test": "node --test test/*.test.js"
+  },
+  "license": "MIT"
+}

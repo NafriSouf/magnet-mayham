@@ -1,0 +1,10 @@
+{
+  "name": "Magnet Mayhem",
+  "short_name": "Magnet Mayhem",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0b0918",
+  "theme_color": "#0b0918",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
